@@ -1,38 +1,27 @@
-# Library Management System
+# Folio | Library Management
 
-Web Programming, Ilia State University, Fall 2026. Team 01: Nikoloz Bakuradze, Anbu Vimalan Francis, Merab Enukidze.
+Web Programming interim MVP, Team 01. Active contributors are Nikoloz Bakuradze and Anbu Vimalan Francis.
 
-A library app where librarians manage the catalogue and loans, and members browse and borrow books.
+Members search the catalogue, open a title and borrow an available copy. Library staff maintain books, authors and circulation records. The React client calls an Express API backed by SQLite. The API verifies the current role for each authenticated request and stores bcrypt password hashes.
 
-**Figma:** _paste the view link here_
+## Design
 
-## Stack
+[Editable wireframes, finished screens and style guide](https://www.figma.com/design/oMu2BvvAvMqskeTRnWHlDn). The button and text field are adapted from [Figma's Simple Design System](https://www.figma.com/community/file/1380235722331273046/simple-design-system). Folio pairs Lora book titles with Source Sans 3 for labels and catalogue data. A forest green action color distinguishes controls from the paper background. The mobile catalogue lets readers scroll across its columns. Font licenses are included in client/public/fonts.
 
-- Frontend: React (Vite) + React Router
-- Backend: Express.js REST API (Node.js)
-- Database: SQLite (`better-sqlite3`), parameterized queries only
-- Auth: JWT, passwords hashed with bcrypt, roles checked on the server
+## Run locally
 
-## How to run
+Install Node.js 24 or later. On Windows extract the project, double-click START.cmd and open http://localhost:5173 when Vite reports ready. The first launch downloads dependencies, generates a local signing secret and seeds the database. Later launches preserve changes.
 
-Requires Node.js 20+.
+On macOS or Linux run these commands from the project root.
 
-```bash
-# 1. API
-cd server
-npm install
-cp .env.example .env
-npm run seed      # creates library.db from schema.sql and inserts test data
-npm start         # http://localhost:4000
-
-# 2. Frontend (second terminal)
-cd client
-npm install
-cp .env.example .env
-npm run dev       # http://localhost:5173
+```sh
+npm ci --prefix server
+npm ci --prefix client
+node scripts/setup.mjs
+node scripts/start.mjs
 ```
 
-`npm run seed` can be run again at any time to reset the database to the demo state.
+Run the isolated API checks with `npm test --prefix server`. Build the client with `npm run build --prefix client`.
 
 ## Test logins
 
@@ -75,8 +64,3 @@ server/   schema.sql, src/ (index, routes, auth, db, seed)
 client/   src/ (pages, api helper, styles.css)
 ```
 
-## Team split
-
-- Member A: authentication and roles (`server/src/auth.js`, auth routes, `Login.jsx`, `Users.jsx`)
-- Member B: database and CRUD (`schema.sql`, `seed.js`, books/authors/loans routes)
-- Member C: Figma design and interface (`client/src`, `styles.css`)

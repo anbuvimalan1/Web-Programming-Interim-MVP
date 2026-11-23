@@ -5,6 +5,7 @@ import { getUser } from './api.js';
 import Layout from './Layout.jsx';
 import Login from './pages/Login.jsx';
 import Books from './pages/Books.jsx';
+import BookDetail from './pages/BookDetail.jsx';
 import Authors from './pages/Authors.jsx';
 import Loans from './pages/Loans.jsx';
 import Users from './pages/Users.jsx';
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')).render(
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/books" element={<Protected><Books /></Protected>} />
+      <Route path="/books/:id" element={<Protected><BookDetail /></Protected>} />
       <Route path="/authors" element={<Protected roles={['librarian', 'admin']}><Authors /></Protected>} />
       <Route path="/loans" element={<Protected><Loans /></Protected>} />
       <Route path="/users" element={<Protected roles={['admin']}><Users /></Protected>} />

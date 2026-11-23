@@ -15,8 +15,9 @@ export default function Layout({ children }) {
   return (
     <div className="shell">
       <header className="topbar">
-        <span className="brand">Library</span>
-        <nav>
+        <NavLink className="brand" to="/books">Folio</NavLink>
+        <span className="brand-note">Library catalogue</span>
+        <nav aria-label="Main navigation">
           <NavLink to="/books">Books</NavLink>
           {isStaff && <NavLink to="/authors">Authors</NavLink>}
           <NavLink to="/loans">{isStaff ? 'Loans' : 'My loans'}</NavLink>
