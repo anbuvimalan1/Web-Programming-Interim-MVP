@@ -8,7 +8,7 @@ const staff = requireRole('librarian', 'admin');
 const adminOnly = requireRole('admin');
 
 const str = (v) => (typeof v === 'string' ? v.trim() : '');
-const int = (v) => (v === '' || v == null ? null : Number.parseInt(v, 10));
+const int = (v) => (v === '' || v == null ? null : (Number.isSafeInteger(Number(v)) ? Number(v) : NaN));
 const bad = (res, msg) => res.status(400).json({ error: msg });
 const today = () => new Date().toISOString().slice(0, 10);
 const plusDays = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
@@ -172,6 +172,8 @@ router.put('/books/:id', requireAuth, staff, (req, res) => {
   const b = bookInput(req.body);
   if (b.error) return bad(res, b.error);
   if (!db.prepare('SELECT 1 FROM books WHERE id = ?').get(req.params.id)) return res.status(404).json({ error: 'Book not found' });
+  const active = db.prepare('SELECT COUNT(*) AS count FROM loans WHERE book_id=? AND returned_at IS NULL').get(req.params.id).count;
+  if (b.copies_total < active) return res.status(409).json({ error: `Cannot reduce copies below ${active} currently on loan` });
   try {
     saveBook(Number(req.params.id), b);
     res.json(shapeBook(db.prepare(`${booksQuery} WHERE b.id = ?`).get(req.params.id)));
@@ -181,6 +183,8 @@ router.put('/books/:id', requireAuth, staff, (req, res) => {
 });
 
 router.delete('/books/:id', requireAuth, staff, (req, res) => {
+  if (db.prepare('SELECT 1 FROM loans WHERE book_id=? AND returned_at IS NULL').get(req.params.id))
+    return res.status(409).json({ error: 'Return all active loans before deleting this book' });
   const info = db.prepare('DELETE FROM books WHERE id = ?').run(req.params.id);
   if (!info.changes) return res.status(404).json({ error: 'Book not found' });
   res.json({ ok: true });
@@ -207,7 +211,7 @@ router.post('/loans', requireAuth, (req, res) => {
   const isStaff = req.user.role !== 'member';
   const userId = isStaff ? int(req.body.user_id) : req.user.id;
   if (!bookId || !userId) return bad(res, 'Book and member are required');
-  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
+  const user = db.prepare("SELECT id FROM users WHERE id = ? AND role='member'").get(userId);
   if (!user) return bad(res, 'Member not found');
 
   const create = db.transaction(() => {
@@ -238,6 +242,10 @@ router.put('/loans/:id/return', requireAuth, staff, (req, res) => {
 router.put('/loans/:id', requireAuth, staff, (req, res) => {
   const due = str(req.body.due_at);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(due)) return bad(res, 'Due date must be YYYY-MM-DD');
+  const parsed = new Date(`${due}T00:00:00Z`);
+  if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0,10) !== due) return bad(res, 'Choose a real calendar date');
+  const loan = db.prepare('SELECT loaned_at FROM loans WHERE id=?').get(req.params.id);
+  if (loan && due < loan.loaned_at) return bad(res, 'Due date cannot be before the loan date');
   const info = db.prepare('UPDATE loans SET due_at = ? WHERE id = ? AND returned_at IS NULL').run(due, req.params.id);
   if (!info.changes) return res.status(404).json({ error: 'Active loan not found' });
   res.json(db.prepare(`${loansQuery} WHERE l.id = ?`).get(req.params.id));
