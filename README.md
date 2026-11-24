@@ -6,7 +6,9 @@ Members search the catalogue, open a title and borrow an available copy. Library
 
 ## Design
 
-[Editable wireframes, finished screens and style guide](https://www.figma.com/design/oMu2BvvAvMqskeTRnWHlDn). The button and text field are adapted from [Figma's Simple Design System](https://www.figma.com/community/file/1380235722331273046/simple-design-system). Folio pairs Lora book titles with Source Sans 3 for labels and catalogue data. A forest green action color distinguishes controls from the paper background. The mobile catalogue lets readers scroll across its columns. Font licenses are included in client/public/fonts.
+[Editable wireframes, finished screens and style guide](https://www.figma.com/design/oMu2BvvAvMqskeTRnWHlDn). The button and text field are adapted from [Figma's Simple Design System](https://www.figma.com/community/file/1380235722331273046/simple-design-system). Folio uses Lora for its wordmark and Source Sans 3 for the interface. A dark blue palette and cyan actions frame a searchable bookshelf. The book grid reflows on small screens and staff tables scroll within their panels. Font licenses are included in client/public/fonts.
+
+Edition covers are from [Open Library](https://openlibrary.org/dev/docs/api/covers). The sign-in photo is [the Library of Congress Main Reading Room by Shawn Miller](https://commons.wikimedia.org/wiki/File:20171201SM007-Pano.jpg), released under CC0.
 
 ## Run locally
 

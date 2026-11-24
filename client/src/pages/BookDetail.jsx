@@ -32,7 +32,7 @@ export default function BookDetail() {
         {Object.entries({'ISBN':book.isbn || 'Not recorded','Publication year':book.year || 'Not recorded','Category':book.category || 'Uncategorised','Authors':book.authors,'Total copies':book.copies_total}).map(([k,v])=><div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
       </dl></section><aside className="detail-actions">
         {staff ? <><Link className="btn" to={`/books?edit=${book.id}`}>Edit book</Link><button className="btn danger" disabled={busy} onClick={remove}>Delete book</button></> : <button className="btn" disabled={busy || book.copies_available <= 0} onClick={borrow}>{busy ? 'Borrowing…' : 'Borrow book'}</button>}
-        <section className="availability"><p className="eyebrow">{book.copies_available > 0 ? 'Available to borrow' : 'Currently unavailable'}</p><h2>{book.copies_available} of {book.copies_total} copies</h2><p>Members can borrow a copy for 14 days.<br/>Librarians record loans and returns.</p></section>
+        <section className="panel availability"><p className="eyebrow">{book.copies_available > 0 ? 'Available to borrow' : 'Currently unavailable'}</p><h2>{book.copies_available} of {book.copies_total} copies</h2><p>Members can borrow a copy for 14 days.<br/>Librarians record loans and returns.</p></section>
       </aside></div>
     </>}
   </>;

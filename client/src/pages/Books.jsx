@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api, getUser } from '../api.js';
+import BookCover from '../BookCover.jsx';
 
 const empty = { title: '', isbn: '', year: '', copies_total: 1, category_id: '', author_ids: [] };
 
@@ -11,6 +12,7 @@ export default function Books() {
   const [authors, setAuthors] = useState([]);
   const [categories, setCategories] = useState([]);
   const [q, setQ] = useState('');
+  const [activeQuery, setActiveQuery] = useState('');
   const [editing, setEditing] = useState(null); // null | book form object
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,7 +23,9 @@ export default function Books() {
   const load = async (search = q) => {
     setLoading(true);
     try {
-      setBooks(await api(`/books?q=${encodeURIComponent(search)}`));
+      const query = search.trim();
+      setBooks(await api(`/books?q=${encodeURIComponent(query)}`));
+      setActiveQuery(query);
       setError('');
     } catch (e) { setError(e.message); }
     setLoading(false);
@@ -54,16 +58,21 @@ export default function Books() {
 
   return (
     <>
-      <p className="eyebrow">{editing ? 'Catalogue / New record' : 'The collection'}</p>
-      <div className="head">
-        <div><h1>{editing ? (editing.id ? 'Edit book' : 'Add a book') : 'Books'}</h1><p className="subtitle">{editing ? 'Create a catalogue record for your collection.' : 'Browse the catalogue and manage available copies.'}</p></div>
-        {isStaff && !editing && <button className="btn" onClick={() => { setEditing({ ...empty }); setError(''); }}>Add book</button>}
-      </div>
-
-      {!editing && <form className="search" onSubmit={(e) => { e.preventDefault(); load(); }}>
-        <label>Search the catalogue<input placeholder="Search title, author or ISBN" value={q} onChange={(e) => setQ(e.target.value)} /></label>
-        <button className="btn">Search</button>
-      </form>}
+      {editing ? (
+        <>
+          <p className="eyebrow">Catalogue / {editing.id ? 'Edit record' : 'New record'}</p>
+          <div className="head"><h1>{editing.id ? 'Edit book' : 'Add a book'}</h1></div>
+        </>
+      ) : (
+        <section className="catalogue-intro" aria-labelledby="catalogue-title">
+          <h1 id="catalogue-title">Explore the catalogue</h1>
+          <form className="search" onSubmit={(e) => { e.preventDefault(); load(); }}>
+            <label className="sr-only" htmlFor="book-search">Search the catalogue</label>
+            <input id="book-search" type="search" placeholder="Search by title, author or ISBN" value={q} onChange={(e) => setQ(e.target.value)} />
+            <button className="btn">Search</button>
+          </form>
+        </section>
+      )}
 
       {notice && <p className="notice" onClick={() => setNotice('')}>{notice}</p>}
       {error && <p className="error" role="alert">{error}</p>}
@@ -95,32 +104,38 @@ export default function Books() {
         </form><aside className="form-note"><h2>A complete record</h2><p>Use the edition’s ISBN and publication year.</p><p>Copies includes both available books and those currently on loan.</p><p>Add missing authors on the Authors page first.</p></aside></div>
       )}
 
-      {!editing && (loading ? <p className="muted" role="status">Loading books…</p> : books.length === 0 ? (
-        <p className="muted">No books match your search.</p>
-      ) : (
-        <div className="table-wrap">
-          <table className="catalogue-table">
-            <colgroup>{[330,230,140,100,130,110].map((width,i)=><col key={i} style={{width}} />)}</colgroup>
-            <thead>
-              <tr><th>Title / ISBN</th><th>Author</th><th>Category</th><th>Year</th><th>Available</th><th><span className="sr-only">Actions</span></th></tr>
-            </thead>
-            <tbody>
-              {books.map((b) => (
-                <tr key={b.id}>
-                  <td><Link className="book-title" to={`/books/${b.id}`}>{b.title}</Link><div className="muted small">{b.isbn}</div></td>
-                  <td>{b.authors}</td>
-                  <td>{b.category || '—'}</td>
-                  <td>{b.year || '—'}</td>
-                  <td>{b.copies_available > 0 ? `${b.copies_available} of ${b.copies_total}` : <span className="tag bad">None left</span>}</td>
-                  <td className="row-actions">
-                    <Link to={`/books/${b.id}`}>View</Link>
-                  </td>
-                </tr>
+      {!editing && (
+        <section aria-labelledby="collection-title">
+          <div className="collection-head">
+            <h2 id="collection-title">{activeQuery ? `Results for “${activeQuery}”` : 'Books'}</h2>
+            {isStaff && <button className="btn ghost" onClick={() => { setEditing({ ...empty }); setError(''); }}>Add book</button>}
+          </div>
+          {loading ? <p className="muted" role="status">Loading books…</p> : books.length === 0 ? (
+            <p className="empty-state">No books match your search.</p>
+          ) : (
+            <ul className={activeQuery ? 'book-list results' : 'book-list'}>
+              {books.map((book) => (
+                <li className="book-card" key={book.id}>
+                  <Link className="book-link" to={`/books/${book.id}`}>
+                    <BookCover book={book} compact={Boolean(activeQuery)} />
+                    <div className="book-meta">
+                      <h3>{book.title}</h3>
+                      {book.authors && <p className="muted">{book.authors}</p>}
+                      <div className="book-facts">
+                        <span>{[book.category, book.year].filter(Boolean).join(' · ')}</span>
+                        {activeQuery && book.isbn && <span>ISBN {book.isbn}</span>}
+                        <span className={book.copies_available > 0 ? 'availability-text' : 'availability-text unavailable'}>
+                          {book.copies_available > 0 ? `${book.copies_available} of ${book.copies_total} available` : 'None left'}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
+            </ul>
+          )}
+        </section>
+      )}
     </>
   );
 }

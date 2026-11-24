@@ -1,0 +1,22 @@
+FOLIO | Library Management
+Nikoloz Bakuradze and Anbu Vimalan Francis
+
+Folio tracks books, authors, copies and loans. The React interface calls an Express API. SQLite stores the catalogue and loan history on this computer. The API checks the signed-in user's current role before allowing changes.
+
+START ON MAC
+Install Node.js 24 or later. Extract the whole ZIP. In Terminal type bash followed by a space, drag Start Mac.command from Finder into Terminal, then press Return. The first launch needs internet to install dependencies. Once Vite says ready, open http://localhost:5173 in your browser. Keep Terminal open. Ctrl+C stops the app. Repeat the same launch command next time. Your demo edits persist on this Mac.
+
+DEMO ACCOUNTS
+Admin      admin@library.test       Admin123!
+Librarian  librarian@library.test   Librarian123!
+Member     member@library.test      Member123!
+
+SEVEN-MINUTE WALKTHROUGH
+0-2 min: Nikoloz opens the Figma catalogue and the app side by side. Explain how the design uses book covers, cyan actions and compact search results. Narrow the browser to show how the catalogue grid reflows.
+2-4 min: Sign in as librarian. Create an author and a one-copy book linked to that author. Open the book detail, edit its title, and show the updated catalogue entry.
+4-6 min: Sign out and borrow the new title as the member. Show the loan and the catalogue's updated availability. Switch to the librarian to record the return. Explain how the loan links the member and the book in SQLite.
+6-7 min: Open Users as admin. Explain why registration creates a member and why hiding a button alone cannot enforce permissions. The server checks roles on requests. Leave three minutes for questions.
+
+Design: https://www.figma.com/design/oMu2BvvAvMqskeTRnWHlDn
+Code: https://github.com/anbuvimalan1/Web-Programming-Interim-MVP
+For Classroom submit the repository link, the viewable Figma link and the contributors' names and GitHub usernames.

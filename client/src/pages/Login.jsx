@@ -27,29 +27,34 @@ export default function Login() {
 
   return (
     <div className="auth">
-      <aside className="auth-intro">
-        <div><span className="brand">Folio</span><p className="eyebrow">Library management</p></div>
-        <div><h2>A place for<br />curious minds.</h2><p>Find your next book.<br />Keep your reading in order.</p></div>
-        <p className="eyebrow">Catalogue / Authors / Loans</p>
-      </aside>
-      <div className="auth-main">
-      <form className="auth-card" onSubmit={submit}>
-        <header><h1>{mode === 'login' ? 'Welcome back' : 'Create account'}</h1><p className="subtitle">{mode === 'login' ? 'Log in to your library account.' : 'Join the library as a member.'}</p></header>
-        {mode === 'register' && (
-          <label>Full name<input value={form.name} onChange={set('name')} required /></label>
-        )}
-        <label>Email<input type="email" placeholder="you@example.com" autoComplete="email" value={form.email} onChange={set('email')} required /></label>
-        <label>Password<input type="password" placeholder="Enter your password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={form.password} onChange={set('password')} required minLength={mode === 'register' ? 8 : undefined} /></label>
-        {error && <p className="error" role="alert">{error}</p>}
-        <button className="btn" disabled={busy}>{busy ? 'Please wait…' : mode === 'login' ? 'Log in' : 'Register'}</button>
-        <p className="switch">
-          {mode === 'login' ? 'New to the library?' : 'Already registered?'}{' '}
-          <button type="button" className="link" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>
-            {mode === 'login' ? 'Create an account' : 'Log in'}
-          </button>
-        </p>
-      </form>
-      </div>
+      <main className="auth-main">
+        <div className="auth-inner">
+          <div className="auth-brand">
+            <span className="brand">Folio<span>.</span></span>
+            <span className="brand-note">Library management</span>
+          </div>
+          <form className="auth-card" onSubmit={submit}>
+            <header>
+              <h1>{mode === 'login' ? 'Welcome back' : 'Create account'}</h1>
+              <p className="subtitle">{mode === 'login' ? 'Log in to your library account.' : 'Join the library as a member.'}</p>
+            </header>
+            {mode === 'register' && (
+              <label>Full name<input value={form.name} onChange={set('name')} required /></label>
+            )}
+            <label>Email<input type="email" placeholder="you@example.com" autoComplete="email" value={form.email} onChange={set('email')} required /></label>
+            <label>Password<input type="password" placeholder="Enter your password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={form.password} onChange={set('password')} required minLength={mode === 'register' ? 8 : undefined} /></label>
+            {error && <p className="error" role="alert">{error}</p>}
+            <button className="btn" disabled={busy}>{busy ? 'Please wait…' : mode === 'login' ? 'Log in' : 'Register'}</button>
+            <p className="switch">
+              {mode === 'login' ? 'New to the library?' : 'Already registered?'}{' '}
+              <button type="button" className="link" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>
+                {mode === 'login' ? 'Create an account' : 'Log in'}
+              </button>
+            </p>
+          </form>
+        </div>
+      </main>
+      <div className="auth-art" aria-hidden="true" />
     </div>
   );
 }

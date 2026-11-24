@@ -15,8 +15,7 @@ export default function Layout({ children }) {
   return (
     <div className="shell">
       <header className="topbar">
-        <NavLink className="brand" to="/books">Folio</NavLink>
-        <span className="brand-note">Library catalogue</span>
+        <NavLink className="brand" to="/books" aria-label="Folio, books">Folio<span>.</span></NavLink>
         <nav aria-label="Main navigation">
           <NavLink to="/books">Books</NavLink>
           {isStaff && <NavLink to="/authors">Authors</NavLink>}
@@ -24,8 +23,8 @@ export default function Layout({ children }) {
           {user.role === 'admin' && <NavLink to="/users">Users</NavLink>}
         </nav>
         <div className="who">
-          <span>{user.name} <small className="role">{user.role}</small></span>
-          <button className="btn ghost" onClick={logout}>Log out</button>
+          <span className="account-name">{user.name} <small className="role">{user.role}</small></span>
+          <button className="btn ghost small" onClick={logout}>Log out</button>
         </div>
       </header>
       <main>{children}</main>
